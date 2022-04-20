@@ -1,0 +1,6 @@
+the program starts when you are prompted with a login of your email and password
+admin user = Jason (email= jason@devpipeline.com, password = Qx7@!3)
+    Shayne (email= shayne@devpipeline.com, password = southafrica)
+    Ben = (ben@devpipeline.com, password = floridarocks)
+user = Ian(email = the.ianwmiller@gmail.com, password = 1234)
+depending whether you are an admin or not, a menu with options for that user level will appear
