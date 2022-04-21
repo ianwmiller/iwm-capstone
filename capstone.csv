@@ -1,3 +1,8 @@
-First Name,Last Name,Phone Number,Email,Hire Date,User Type
-Jason,Fletcher,8013681321,jason@devpipeline.com,N/A,manager
-Ian,Miller,8018228987,the.ianwmiller@gmail.com,2022-04-15,user
+First Name,Last Name,Competency: Data Types,Scale
+Jason,Fletcher,1,4
+Assessment Name,Assessment ID,User ID,Assessment Score
+Computer Anatomy Competency Measure,1,1,4
+Computer Anatomy Competency Measure,1,2,4
+Computer Anatomy Competency Measure,1,2,4
+Computer Anatomy Competency Measure,1,1,4
+Understanding Your Own Computers Anatomy,2,1,4

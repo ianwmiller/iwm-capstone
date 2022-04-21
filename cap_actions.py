@@ -396,11 +396,11 @@ def manager_add():
                 id_of_proc = input('Enter The ID of the Proctor of this Assessment: ')
 
                 score = input('Enter the Score of the Assessment: ')
-                taken_when = input('Was this Assessment taken today? (Y/N):')
-                if taken_when == 'Y' or 'y':
+                taken_when = input('Was this Assessment taken today? (Y/N): ')
+                if taken_when == 'Y' or taken_when == 'y':
                     d = datetime.today()
                     date_taken = d.date()
-                elif taken_when == 'N' or 'n':
+                else:
                     year = input('Enter the 4 digit Year they were hired: ')
                     mon = input('Enter the 2 digit Month they were hired: ')
                     day = input('Enter the 2 digit Day they were hired: ')
@@ -769,7 +769,7 @@ def manager_delete():
 
 def manager_csv():
     while True:
-        csv_opt = input("Select what you would like to do with the CSV File (Press Enter to Exit): \n[1] Export User List to CSV File\n[2] Export Competency Information to CSV File\n[3] Import Information from CSV File: ")
+        csv_opt = input("Select what you would like to do with the CSV File (Press Enter to Exit): \n[1] Export User List to CSV File\n[2] Export Competency Information to CSV File\n[3] Export User Competency Summary (All Competency levels for a Single User)\n[4]Competency Results Summary (All Users Competency Levels for a Single Competency)\n[5]Import Information from CSV File: ")
         if csv_opt == '':
             break
         elif csv_opt =='1':
@@ -788,7 +788,49 @@ def manager_csv():
                 wrt.writerow(header_fields)        
                 wrt.writerows(rows)
             print('EXPORT SUCCESSFUL')
-        elif csv_opt =='3':
+        elif csv_opt == '3':
+            rows = cursor.execute('SELECT user_id, first_name, last_name FROM Users').fetchall();
+            print(f'{"ID":<4} {"First Name":<15} {"Last Name":<15}')
+            for row in rows:
+                print(f'{row[0]:<4} {row[1]:<15} {row[2]:<15}')
+            users_comp = input('Enter the ID of the User who\'s List of Competencies you would like to see: ')
+            query = 'SELECT c.name, uc.competency_id, uc.scale FROM User_Competency uc LEFT OUTER JOIN Competencies c ON uc.competency_id = c.competency_id WHERE uc.user_id = ? AND scale IS NOT NULL'
+            values = (users_comp, )
+            list_of_comp = cursor.execute(query, values).fetchall();
+            query = 'SELECT a.name, a.assessment_id, a.competency_id, car.score FROM Assessments a LEFT OUTER JOIN C_A_Results car ON a.assessment_id = car.assessment_id WHERE car.user = ? AND score IS NOT NULL'
+            values = (users_comp, )
+            list_of_comp_two = cursor.execute(query, values).fetchall();
+            header_fields_one =["Competenecy Name", "Competency ID", "Competency Level"]
+            header_fields_two =["Assessment Name", "Assessment ID","Competency ID", "Assessment Score"]
+            with open('capstone.csv', 'w') as outfile:
+                wrt = csv.writer(outfile)
+                wrt.writerow(header_fields_one)        
+                wrt.writerows(list_of_comp)
+                wrt.writerow(header_fields_two)        
+                wrt.writerows(list_of_comp_two)
+            print('EXPORT SUCCESSFUL')
+        elif csv_opt == '4':
+            rows = cursor.execute('SELECT competency_id, name FROM Competencies').fetchall();
+            print(f'{"ID":<4} {"Competency Name":<25}')
+            for row in rows:
+                print(f'{row[0]:<4} {row[1]:<25}')
+            which_comp = input('Enter the ID of the Competency you want to see all Competency Levels for: ')
+            query = 'SELECT u.first_name, u.last_name, uc.competency_id, uc.scale FROM User_Competency uc LEFT OUTER JOIN Users u ON uc.user_id = u.user_id WHERE uc.competency_id = ?'
+            values = (which_comp, )
+            all_users_comp = cursor.execute(query, values).fetchall();
+            query = 'SELECT a.name, a.assessment_id, car.user, car.score FROM Assessments a LEFT OUTER JOIN C_A_Results car ON a.assessment_id = car.assessment_id WHERE a.competency_id = ?'
+            values = (which_comp, )
+            all_users_comp_two = cursor.execute(query, values).fetchall();
+            header_fields_one = ["First Name", "Last Name",f"Competency: {rows[int(which_comp)][1]}", "Scale"]
+            header_fields_two =["Assessment Name", "Assessment ID","User ID", "Assessment Score"]
+            with open('capstone.csv', 'w') as outfile:
+                wrt = csv.writer(outfile)
+                wrt.writerow(header_fields_one)        
+                wrt.writerows(all_users_comp)
+                wrt.writerow(header_fields_two)        
+                wrt.writerows(all_users_comp_two)
+            print('EXPORT SUCCESSFUL')
+        elif csv_opt =='5':
             with open('capstone.csv', 'r') as csvfile:
                 header = csvfile.readline()
                 splitting = header.strip('\n').split(',')

@@ -4,3 +4,10 @@ admin user = Jason (email= jason@devpipeline.com, password = Qx7@!3)
     Ben = (ben@devpipeline.com, password = floridarocks)
 user = Ian(email = the.ianwmiller@gmail.com, password = 1234)
 depending whether you are an admin or not, a menu with options for that user level will appear
+managers:
+    managers have the option, to view, edit and add information to the 5 tables in the database, as well as to export some information to a csv file.
+    managers can also delete assessment scores.
+users:
+    users have the ability to check their own scores on assessments, as well as competencies, they are also edit their personal information and change their password.
+
+Mess around with it and have fun!
