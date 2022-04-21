@@ -25,7 +25,7 @@ def view_comp(user_id):
             query = 'SELECT scale FROM User_Competency WHERE competency_id = ? and user_id = ?'
             values = (comp_choice, user_id)
             scale = cursor.execute(query, values).fetchall();
-            print(f'You have a competency level of {scale} in this Competency.')
+            print(f'You have a competency level of {scale[0][0]} in this Competency.')
             another = input('Would you like to view another? (Y/N):')
             if another == 'N' or another == 'n':
                 break
@@ -52,10 +52,10 @@ def view_assess(user_id):
         if assess_choice == '':
             break
         elif assess_choice in choice:
-            query = 'SELECT result_id, date_taken FROM C_A_Results WHERE assessment_id = ? and user_id = ?'
+            query = 'SELECT result_id, date_taken FROM C_A_Results WHERE assessment_id = ? and user = ?'
             values = (assess_choice, user_id)
             indiv_assess = cursor.execute(query, values).fetchall();
-            print(f'{"Attempts":<9}{"Date Taken":<20}')
+            print(f'{"Attempt":<9}{"Date Taken":<20}')
             for i in indiv_assess:
                 print(f'{i[0]:<9} {i[1]:<20}')
                 attempt_num.append(str(i[0]))
@@ -66,7 +66,7 @@ def view_assess(user_id):
                 query = 'SELECT score FROM C_A_Results WHERE result_id = ?'
                 values = (attempt_choice,)
                 score = cursor.execute(query, values).fetchall();
-                print(f'You scored {score}% on this Assessment.')
+                print(f'You scored a {score[0][0]} on this Assessment.')
                 another = input('Would you like to view another score? (Y/N):')
                 if another == 'N' or another == 'n':
                     break
@@ -173,9 +173,9 @@ def manager_view():
                 values = (first, last)
                 rows = cursor.execute(query, values).fetchall();
                 # can clean this up with better code since it will only be one row, too lazy rn though
-                print(f'{"ID":<4} {"First Name":<15} {"Last Name":<15} {"Phone":<15} {"Email":<30} {"On":<2} {"Date Created":<30} {"Hire Date":<30} {"Type":<8}')
+                print(f'{"ID":<4} {"First Name":<15} {"Last Name":<15} {"Phone":<15} {"Email":<30} {"On":<2} {"Date Created":<15} {"Hire Date":<15} {"Type":<8}')
                 for row in rows:
-                    print(f'{row[0]:<4} {row[1]:<15} {row[2]:<15} {row[3]:<15} {row[4]:<30} {row[5]:<2} {row[6]:<30} {row[7]:<30} {row[8]:<8}')
+                    print(f'{row[0]:<4} {row[1]:<15} {row[2]:<15} {row[3]:<15} {row[4]:<30} {row[5]:<2} {row[6]:<15} {row[7]:<15} {row[8]:<8}')
                     if type(row) == None:
                         print('None')
             else:
@@ -229,9 +229,9 @@ def manager_view():
             query = 'SELECT a.name, car.* FROM C_A_Results car LEFT OUTER JOIN Assessments a ON car.assessment_id = a.assessment_id WHERE car.user = ?'
             values = (users_assess, )
             list_of_assess = cursor.execute(query, values).fetchall();
-            print(f'{"Name":<25} {"Score":<6} {"Date Taken":<21} {"Proctor":<25} ')
+            print(f'{"Name":<45} {"Score":<6} {"Date Taken":<21} {"Proctor":<25} ')
             for assess in list_of_assess:
-                print(f'{assess[0]:<25} {assess[2]:<6} {assess[3]:<21} {assess[4]:<25}')
+                print(f'{assess[0]:<45} {assess[2]:<6} {assess[3]:<21} {assess[4]:<25}')
 
         else:
             print('Sorry, Try Again')
@@ -741,13 +741,13 @@ def manager_delete():
             print(f'{user[0]:<4} {user[1]:<15} {user[2]:<15}')
         print('\n')
         id_of_user = input('Enter The User you want to remove an Assessment Score for: ')
-        query = 'SELECT a.name, car.result_id, car.score, car.date_taken FROM C_A_Results car LEFT OUTER JOIN Assessments a ON car.assessment_id = a.assessment_id WHERE car.user = ?'
+        query = 'SELECT car.result_id, a.name, car.score, car.date_taken FROM C_A_Results car LEFT OUTER JOIN Assessments a ON car.assessment_id = a.assessment_id WHERE car.user = ?'
         values = (id_of_user, )
         list_of_assess = cursor.execute(query, values).fetchall();
-        print(f'{"Result ID":<10} {"Name":<25} {"Score":<6} {"Date Taken":<21}')
+        print(f'{"Result ID":<10} {"Assessment Name":<45} {"Score":<6} {"Date Taken":<21}')
         for assess in list_of_assess:
-            print(f'{assess[0]:<25} {assess[2]:<6} {assess[3]:<21} {assess[4]:<25}')
-        delete_id = input("Select the Result ID you would like to Delete for this User")
+            print(f'{assess[0]:<10} {assess[1]:<45} {assess[2]:<6} {assess[3]:<21}')
+        delete_id = input("Select the Result ID you would like to Delete for this User: ")
         delete_conf = input(f'Do you REALLY want to DELETE Result ID {delete_id}? (Y/N): ')
         if delete_conf == 'Y' or delete_conf == 'y':
             del_query = 'DELETE FROM C_A_Results WHERE result_id = ?'
